@@ -1,3 +1,5 @@
-class Main {
-  println("Hello World! Git Works!")
-}
+object Main:
+
+  def main(args: Array[String]): Unit=
+    println("Hello World!")
+
