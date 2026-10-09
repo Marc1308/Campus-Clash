@@ -1,0 +1,31 @@
+# sbt / Scala
+target/
+project/target/
+project/project/
+
+.bsp/
+.bloop/
+.metals/
+
+# IntelliJ IDEA
+.idea/
+*.iml
+*.iws
+*.ipr
+out/
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+Desktop.ini
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*~
