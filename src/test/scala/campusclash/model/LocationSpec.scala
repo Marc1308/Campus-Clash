@@ -7,19 +7,19 @@ class LocationSpec extends AnyWordSpec with Matchers:
 
   "Location.Campus" should {
     "have the correct display name" in {
-      Location.Campus.displayName shouldBe "..."
+      Location.Campus.displayName shouldBe "Campus"
     }
   }
 
   "Location.BuildingA" should {
     "have the correct display name" in {
-      Location.BuildingA.displayName shouldBe "..."
+      Location.BuildingA.displayName shouldBe "A-Gebäude"
     }
   }
 
   "Location.Library" should {
     "have the correct display name" in {
-      Location.Library.displayName shouldBe "..."
+      Location.Library.displayName shouldBe "Library"
     }
   }
 
