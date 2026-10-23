@@ -34,8 +34,8 @@ object ConsoleGame:
       case Location.Campus =>
         println("1 - A-Gebäude betreten")
         println("2 - Library betreten")
-        println("3- Mensa betreten")
-        println("4- Status anzeigen")
+        println("3-  Mensa betreten")
+        println("4-  Status anzeigen")
         println("0 - Spiel beenden")
 
         readLine("> ") match
