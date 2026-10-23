@@ -33,13 +33,51 @@ object ConsoleGame:
 
       case Location.Campus =>
         println("1 - A-Gebäude betreten")
-        println("2 - Status anzeigen")
+        println("2 - Library betreten")
+        println("3- Mensa betreten")
+        println("4- Status anzeigen")
         println("0 - Spiel beenden")
 
         readLine("> ") match
           case "1" =>
             val newState =
               state.copy(currentLocation = Location.BuildingA)
+
+            gameLoop(newState)
+
+          case "2" =>
+            val newState =
+              state.copy(currentLocation = Location.Library)
+
+            gameLoop(newState)
+
+          case "3" =>
+            val newState =
+               state.copy(currentLocation = Location.Mensa)
+
+            gameLoop(newState)
+
+          case "4" =>
+            showStatus(state.player)
+            gameLoop(state)
+
+          case "0" =>
+            println("Spiel beendet.")
+
+          case _ =>
+            println("Ungültige Eingabe.")
+            gameLoop(state)
+
+
+      case Location.BuildingA =>
+        println("1 - Gebäude verlassen")
+        println("2 - Status anzeigen")
+        println("0 - Spiel beenden")
+
+        readLine("> ") match
+          case "1" =>
+            val newState =
+              state.copy(currentLocation = Location.Campus)
 
             gameLoop(newState)
 
@@ -54,9 +92,31 @@ object ConsoleGame:
             println("Ungültige Eingabe.")
             gameLoop(state)
 
+      case Location.Library=>
+        println("1 - Library verlassen")
+        println("2 - Status anzeigen")
+        println("0 - Spiel beenden")
 
-      case Location.BuildingA =>
-        println("1 - Gebäude verlassen")
+        readLine("> ") match
+          case "1" =>
+            val newState =
+              state.copy(currentLocation = Location.Campus)
+
+            gameLoop(newState)
+
+          case "2" =>
+            showStatus(state.player)
+            gameLoop(state)
+
+          case "0" =>
+            println("Spiel beendet.")
+
+          case _ =>
+            println("Ungültige Eingabe.")
+            gameLoop(state)
+
+      case Location.Mensa =>
+        println("1 - Mensa verlassen")
         println("2 - Status anzeigen")
         println("0 - Spiel beenden")
 

@@ -1,5 +1,6 @@
 package campusclash
 
+
 import campusclash.console.ConsoleGame
 
 object Main:
