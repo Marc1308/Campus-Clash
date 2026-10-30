@@ -32,7 +32,7 @@ object ConsoleGame:
     state.currentLocation match
 
       case Location.Campus =>
-        println("1 - A-Gebäude betreten")
+        println("1 - A-Gebaeude betreten")
         println("2 - Library betreten")
         println("3-  Mensa betreten")
         println("4-  Status anzeigen")
@@ -70,7 +70,7 @@ object ConsoleGame:
 
 
       case Location.BuildingA =>
-        println("1 - Gebäude verlassen")
+        println("1 - Gebaeude verlassen")
         println("2 - Status anzeigen")
         println("3 - Quest anzeigen")
         println("0 - Spiel beenden")
@@ -94,7 +94,7 @@ object ConsoleGame:
             println("Spiel beendet.")
 
           case _ =>
-            println("Ungültige Eingabe.")
+            println("Ungueltige Eingabe.")
             gameLoop(state)
 
       case Location.Library=>
@@ -122,7 +122,7 @@ object ConsoleGame:
             println("Spiel beendet.")
 
           case _ =>
-            println("Ungültige Eingabe.")
+            println("Ungueltige Eingabe.")
             gameLoop(state)
 
       case Location.Mensa =>
@@ -150,7 +150,7 @@ object ConsoleGame:
             println("Spiel beendet.")
 
           case _ =>
-            println("Ungültige Eingabe.")
+            println("Ungueltige Eingabe.")
             gameLoop(state)
 
 
@@ -179,13 +179,13 @@ object ConsoleGame:
   )
 
   private val ABuildingQuest = Quest(
-    titel = "AGebäude-Quest",
-    question = "Wie viel Bundesländer hat Deutschland ?",
+    titel = "AGebaeude-Quest",
+    question = "Wie viel Bundeslaender hat Deutschland ?",
     correctAnswer = "16"
   )
 
   private val MensaQuest = Quest(
     titel = "Mensa-Quest",
-    question = "Wie heißt das Getränk das auch als süsser Sprudel bekannt ist ?",
+    question = "Wie heißt das Getraenk das auch als suesser Sprudel bekannt ist ?",
     correctAnswer = "Sprite"
   )
