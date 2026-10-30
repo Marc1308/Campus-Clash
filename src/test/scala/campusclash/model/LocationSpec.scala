@@ -13,7 +13,7 @@ class LocationSpec extends AnyWordSpec with Matchers:
 
   "Location.BuildingA" should {
     "have the correct display name" in {
-      Location.BuildingA.displayName shouldBe "A-Gebäude"
+      Location.BuildingA.displayName shouldBe "A-Gebaeude"
     }
   }
 

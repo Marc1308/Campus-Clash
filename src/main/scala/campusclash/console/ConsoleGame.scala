@@ -65,7 +65,7 @@ object ConsoleGame:
             println("Spiel beendet.")
 
           case _ =>
-            println("Ungültige Eingabe.")
+            println("Ungueltige Eingabe.")
             gameLoop(state)
 
 

@@ -45,7 +45,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
       )
 
       output should include("Ort: Campus")
-      output should include("Ort: A-Gebäude")
+      output should include("Ort: A-Gebaeude")
       output should include("Ort: Library")
       output should include("Ort: Mensa")
       output should include("Spiel beendet.")
@@ -73,7 +73,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
         )
       )
 
-      output should include("Ungültige Eingabe.")
+      output should include("Ungueltige Eingabe.")
     }
 
     "handle status and invalid input in building A" in {
@@ -86,9 +86,9 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
         )
       )
 
-      output should include("Ort: A-Gebäude")
+      output should include("Ort: A-Gebaeude")
       output should include("=== Status ===")
-      output should include("Ungültige Eingabe.")
+      output should include("Ungueltige Eingabe.")
       output should include("Spiel beendet.")
     }
 
@@ -104,7 +104,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
 
       output should include("Ort: Library")
       output should include("=== Status ===")
-      output should include("Ungültige Eingabe.")
+      output should include("Ungueltige Eingabe.")
       output should include("Spiel beendet.")
     }
 
@@ -120,7 +120,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
 
       output should include("Ort: Mensa")
       output should include("=== Status ===")
-      output should include("Ungültige Eingabe.")
+      output should include("Ungueltige Eingabe.")
       output should include("Spiel beendet.")
     }
   }
@@ -134,8 +134,8 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
       )
     )
 
-    output should include("AGebäude-Quest")
-    output should include("Wie viel Bundesländer hat Deutschland ?")
+    output should include("AGebaeude-Quest")
+    output should include("Wie viel Bundeslaender hat Deutschland ?")
     output should include("Right.")
     output should include("Spiel beendet.")
   }
@@ -150,7 +150,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
       )
     )
 
-    output should include("AGebäude-Quest")
+    output should include("AGebaeude-Quest")
     output should include("False.")
   }
 
@@ -194,7 +194,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
     )
 
     output should include("Mensa-Quest")
-    output should include("süsser Sprudel")
+    output should include("suesser Sprudel")
     output should include("Right.")
   }
 

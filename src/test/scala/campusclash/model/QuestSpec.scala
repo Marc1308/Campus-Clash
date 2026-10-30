@@ -19,7 +19,7 @@ class QuestTest extends AnyWordSpec with Matchers:
     }
 
     "return false for an incorrect answer" in {
-      quest.checkAnswer("München") shouldBe false
+      quest.checkAnswer("Muenchen") shouldBe false
     }
 
     "ignore uppercase and lowercase letters" in {
