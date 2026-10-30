@@ -165,7 +165,7 @@ class ConsoleGameTest extends AnyWordSpec with Matchers:
     )
 
     output should include("Bibliotheck-Quest")
-    output should include("Wie heißt die Hauptsstadt von Deutschland ?")
+    output should include("Wie heisst die Hauptsstadt von Deutschland ?")
     output should include("Right.")
   }
 

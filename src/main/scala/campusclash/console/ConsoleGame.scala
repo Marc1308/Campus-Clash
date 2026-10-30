@@ -174,7 +174,7 @@ object ConsoleGame:
 
   private val LibaryQuest = Quest(
     titel = "Bibliotheck-Quest",
-    question= "Wie heißt die Hauptsstadt von Deutschland ?",
+    question= "Wie heisst die Hauptsstadt von Deutschland ?",
     correctAnswer= "Berlin"
   )
 
@@ -186,6 +186,6 @@ object ConsoleGame:
 
   private val MensaQuest = Quest(
     titel = "Mensa-Quest",
-    question = "Wie heißt das Getraenk das auch als suesser Sprudel bekannt ist ?",
+    question = "Wie heisst das Getraenk das auch als suesser Sprudel bekannt ist ?",
     correctAnswer = "Sprite"
   )
