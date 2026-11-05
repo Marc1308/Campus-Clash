@@ -6,8 +6,10 @@ lazy val root = (project in file("."))
   .settings(
     name := "Campus-Clash",
 
-    libraryDependencies +=
+    libraryDependencies ++= Seq(
       "org.scalatest" %% "scalatest" % "3.2.19" % Test,
+      "com.lihaoyi" %% "upickle" % "4.4.3"
+    ),
 
     coverageExcludedPackages := "campusclash\\.Main"
   )

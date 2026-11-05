@@ -1,213 +1,72 @@
 package campusclash.console
 
-import org.scalatest.wordspec.AnyWordSpec
+import campusclash.controller.GameController
+import campusclash.data.WorldDataLoader
+import campusclash.model.{GameState, Player}
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
-import java.io.PrintStream
+import java.io.{ByteArrayInputStream, ByteArrayOutputStream, PrintStream}
 import java.nio.charset.StandardCharsets
 
-class ConsoleGameTest extends AnyWordSpec with Matchers:
+class ConsoleGameSpec extends AnyWordSpec with Matchers:
 
   private def runGame(inputs: Seq[String]): String =
-    val inputText = inputs.mkString("\n") + "\n"
-
-    val inputStream =
-      new ByteArrayInputStream(
-        inputText.getBytes(StandardCharsets.UTF_8)
-      )
-
+    val inputStream = new ByteArrayInputStream(
+      (inputs.mkString("\n") + "\n").getBytes(StandardCharsets.UTF_8)
+    )
     val outputStream = new ByteArrayOutputStream()
     val printStream = new PrintStream(outputStream)
 
     Console.withIn(inputStream) {
       Console.withOut(printStream) {
-        ConsoleGame.start()
+        val state = GameState(
+          Player("Student", 100, 100, 1),
+          None,
+          None,
+          Set.empty
+        )
+        val controller = new GameController(state, WorldDataLoader.load())
+
+        new ConsoleGame(controller).start()
       }
     }
 
     outputStream.toString(StandardCharsets.UTF_8)
 
   "ConsoleGame" should {
+    "show buildings, rooms, and quests loaded from JSON" in {
+      val output = runGame(Seq("1", "2", "b", "2", "2", "0"))
 
-    "allow the player to visit all locations" in {
-      val output = runGame(
-        Seq(
-          "1", // Campus -> BuildingA
-          "1", // BuildingA -> Campus
-          "2", // Campus -> Library
-          "1", // Library -> Campus
-          "3", // Campus -> Mensa
-          "1", // Mensa -> Campus
-          "0"  // Beenden
-        )
-      )
-
-      output should include("Ort: Campus")
-      output should include("Ort: A-Gebaeude")
-      output should include("Ort: Library")
-      output should include("Ort: Mensa")
-      output should include("Spiel beendet.")
+      output should include("1 - A Building")
+      output should include("2 - Library")
+      output should include("You enter the A Building.")
+      output should include("Room: Room A101")
+      output should include("Federal States: Reach Room A101.")
+      output should include("Condition: EnterRoom(a101)")
+      output should include("Room: Study Room")
+      output should include("Study Time: Reach the study room.")
+      output should include("Game ended.")
     }
 
-    "show the player status" in {
+    "show status and reject invalid campus and building input" in {
       val output = runGame(
-        Seq(
-          "4",
-          "0"
-        )
+        Seq("s", "text", "99", "1", "s", "text", "99", "0")
       )
 
       output should include("=== Status ===")
       output should include("Name:  Student")
       output should include("HP:    100/100")
       output should include("Level: 1")
+      output.sliding("Invalid input.".length)
+        .count(_ == "Invalid input.") shouldBe 4
     }
 
-    "handle invalid input on the campus" in {
-      val output = runGame(
-        Seq(
-          "x",
-          "0"
-        )
-      )
+    "allow leaving a building and ending the game on campus" in {
+      val output = runGame(Seq("1", "b", "0"))
 
-      output should include("Ungueltige Eingabe.")
+      output.sliding("Location: Campus".length)
+        .count(_ == "Location: Campus") shouldBe 2
+      output should include("Game ended.")
     }
-
-    "handle status and invalid input in building A" in {
-      val output = runGame(
-        Seq(
-          "1",
-          "2",
-          "x",
-          "0"
-        )
-      )
-
-      output should include("Ort: A-Gebaeude")
-      output should include("=== Status ===")
-      output should include("Ungueltige Eingabe.")
-      output should include("Spiel beendet.")
-    }
-
-    "handle status and invalid input in the library" in {
-      val output = runGame(
-        Seq(
-          "2",
-          "2",
-          "x",
-          "0"
-        )
-      )
-
-      output should include("Ort: Library")
-      output should include("=== Status ===")
-      output should include("Ungueltige Eingabe.")
-      output should include("Spiel beendet.")
-    }
-
-    "handle status and invalid input in the mensa" in {
-      val output = runGame(
-        Seq(
-          "3",
-          "2",
-          "x",
-          "0"
-        )
-      )
-
-      output should include("Ort: Mensa")
-      output should include("=== Status ===")
-      output should include("Ungueltige Eingabe.")
-      output should include("Spiel beendet.")
-    }
-  }
-  "start the A-Building quest and accept the correct answer" in {
-    val output = runGame(
-      Seq(
-        "1", // A-Gebäude betreten
-        "3", // Quest anzeigen
-        "16", // Richtige Antwort
-        "0" // Spiel beenden
-      )
-    )
-
-    output should include("AGebaeude-Quest")
-    output should include("Wie viel Bundeslaender hat Deutschland ?")
-    output should include("Right.")
-    output should include("Spiel beendet.")
-  }
-
-  "start the A-Building quest and reject a wrong answer" in {
-    val output = runGame(
-      Seq(
-        "1",
-        "3",
-        "15", // Falsche Antwort
-        "0"
-      )
-    )
-
-    output should include("AGebaeude-Quest")
-    output should include("False.")
-  }
-
-  "start the library quest and accept the correct answer" in {
-    val output = runGame(
-      Seq(
-        "2", // Library betreten
-        "3", // Quest anzeigen
-        "Berlin", // Richtige Antwort
-        "0"
-      )
-    )
-
-    output should include("Bibliotheck-Quest")
-    output should include("Wie heisst die Hauptsstadt von Deutschland ?")
-    output should include("Right.")
-  }
-
-  "start the library quest and reject a wrong answer" in {
-    val output = runGame(
-      Seq(
-        "2",
-        "3",
-        "Paris", // Falsche Antwort
-        "0"
-      )
-    )
-
-    output should include("Bibliotheck-Quest")
-    output should include("False.")
-  }
-
-  "start the mensa quest and accept the correct answer" in {
-    val output = runGame(
-      Seq(
-        "3", // Mensa betreten
-        "3", // Quest anzeigen
-        "Sprite", // Richtige Antwort
-        "0"
-      )
-    )
-
-    output should include("Mensa-Quest")
-    output should include("suesser Sprudel")
-    output should include("Right.")
-  }
-
-  "start the mensa quest and reject a wrong answer" in {
-    val output = runGame(
-      Seq(
-        "3",
-        "3",
-        "Cola",
-        "0"
-      )
-    )
-
-    output should include("Mensa-Quest")
-    output should include("False.")
   }

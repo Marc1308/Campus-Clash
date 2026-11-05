@@ -1,0 +1,73 @@
+{
+  "buildings": [
+    {
+      "id": "buildingA",
+      "name": "A Building",
+      "description": "You enter the A Building.",
+      "entryRoomId": "aEntrance",
+      "rooms": [
+        {
+          "id": "aEntrance",
+          "name": "Entrance Hall",
+          "description": "You are in the entrance hall of the A Building.",
+          "quests": []
+        },
+        {
+          "id": "a101",
+          "name": "Room A101",
+          "description": "An ordinary lecture room.",
+          "quests": [
+            {
+              "id": "a101Quest1",
+              "title": "Federal States",
+              "description": "Reach Room A101.",
+              "condition": {
+                "type": "enterRoom",
+                "roomId": "a101"
+              }
+            },
+            {
+              "id": "a101Quest2",
+              "title": "Experienced Student",
+              "description": "Reach player level 2.",
+              "condition": {
+                "type": "playerLevelAtLeast",
+                "level": 2
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "library",
+      "name": "Library",
+      "description": "You enter the library.",
+      "entryRoomId": "libraryEntrance",
+      "rooms": [
+        {
+          "id": "libraryEntrance",
+          "name": "Entrance Hall",
+          "description": "It is quiet and books are everywhere.",
+          "quests": []
+        },
+        {
+          "id": "studyRoom",
+          "name": "Study Room",
+          "description": "You can study here in peace.",
+          "quests": [
+            {
+              "id": "libraryQuest1",
+              "title": "Study Time",
+              "description": "Reach the study room.",
+              "condition": {
+                "type": "enterRoom",
+                "roomId": "studyRoom"
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

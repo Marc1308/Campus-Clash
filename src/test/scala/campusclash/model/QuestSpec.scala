@@ -1,37 +1,19 @@
-
 package campusclash.model
 
-import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.matchers.should.Matchers
+import org.scalatest.wordspec.AnyWordSpec
 
-class QuestTest extends AnyWordSpec with Matchers:
-
-  val quest = Quest(
-    titel = "Bibliotheks-Quest",
-    question = "Wie heißt die Hauptstadt von Deutschland?",
-    correctAnswer = "Berlin"
-  )
+class QuestSpec extends AnyWordSpec with Matchers:
 
   "A Quest" should {
+    "store its condition" in {
+      val quest = Quest(
+        id = "visitA101",
+        title = "Visit A101",
+        description = "Reach Room A101.",
+        condition = QuestCondition.EnterRoom("a101")
+      )
 
-    "return true for a correct answer" in {
-      quest.checkAnswer("Berlin") shouldBe true
-    }
-
-    "return false for an incorrect answer" in {
-      quest.checkAnswer("Muenchen") shouldBe false
-    }
-
-    "ignore uppercase and lowercase letters" in {
-      quest.checkAnswer("berlin") shouldBe true
-    }
-
-    "ignore whitespace at the beginning and end" in {
-      quest.checkAnswer(" Berlin ") shouldBe true
-    }
-
-    "return false for an empty answer" in {
-      quest.checkAnswer("") shouldBe false
+      quest.condition shouldBe QuestCondition.EnterRoom("a101")
     }
   }
-
