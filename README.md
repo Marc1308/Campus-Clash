@@ -36,6 +36,20 @@ sbt clean coverage test coverageReport
 
 Run mutation testing:
 
+## Mutation Testing
+
+Mutation testing is performed using Stryker4s.
+
+| Metric | Result |
+|---|---:|
+| Total Mutants | 102 |
+| Killed | 102 |
+| Survived | 0 |
+| No Coverage | 0 |
+| Mutation Score | 100% |
+
+Run mutation testing locally:
+
 ```bash
 sbt stryker
 ```
