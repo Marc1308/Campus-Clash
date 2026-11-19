@@ -23,25 +23,7 @@ private[data] object WorldDataJson:
         case QuestCondition.QuestCompleted(questId) =>
           ujson.Obj("type" -> "questCompleted", "questId" -> questId)
       },
-      json =>
-        json("type").str match
-          case "enterRoom" =>
-            QuestCondition.EnterRoom(json("roomId").str)
-          case "playerLevelAtLeast" =>
-            QuestCondition.PlayerLevelAtLeast(json("level").num.toInt)
-          case "enemyDefeated" =>
-            QuestCondition.EnemyDefeated(json("enemyId").str)
-          case "itemCollected" =>
-            QuestCondition.ItemCollected(
-              json("itemId").str,
-              json("amount").num.toInt
-            )
-          case "questCompleted" =>
-            QuestCondition.QuestCompleted(json("questId").str)
-          case conditionType =>
-            throw new IllegalArgumentException(
-              s"Unknown quest condition type: $conditionType"
-            )
+      json => QuestConditionFactory.create(json)
     )
 
   given ReadWriter[Quest] = macroRW
