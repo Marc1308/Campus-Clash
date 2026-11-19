@@ -49,7 +49,7 @@ object GameLogic:
                     amount: Int
                   ): GameState =
     state.copy(
-      player = state.player.takeDamage(amount)
+      player = DamageStrategy.execute(state.player, amount)
     )
 
   def healPlayer(
@@ -57,7 +57,7 @@ object GameLogic:
                   amount: Int
                 ): GameState =
     state.copy(
-      player = state.player.heal(amount)
+      player = HealingStrategy.execute(state.player, amount)
     )
 
   def isGameOver(state: GameState): Boolean =
