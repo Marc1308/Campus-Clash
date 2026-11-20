@@ -13,6 +13,15 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
     def render(): Unit
     def navigationFor(input: String): Option[NavigationCommand]
 
+  private final class CommonActionsScreen(screen: ConsoleScreen) extends ConsoleScreen:
+    override def render(): Unit =
+      screen.render()
+      println("s - Show status")
+      println("0 - End game")
+
+    override def navigationFor(input: String): Option[NavigationCommand] =
+      screen.navigationFor(input)
+
   private object CampusScreen extends ConsoleScreen:
     override def render(): Unit = showCampus()
 
@@ -39,9 +48,11 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
     currentScreen.render()
 
   private def currentScreen: ConsoleScreen =
-    controller.currentBuilding match
+    val screen = controller.currentBuilding match
       case None => CampusScreen
       case Some(building) => new BuildingScreen(building)
+
+    new CommonActionsScreen(screen)
 
   @tailrec
   private def gameLoop(): Unit =
@@ -73,8 +84,6 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
     controller.buildings.zipWithIndex.foreach { case (building, index) =>
       println(s"${index + 1} - ${building.name}")
     }
-    println("s - Show status")
-    println("0 - End game")
 
   private def showBuildingInfo(building: Building): Unit =
     println()
@@ -100,8 +109,6 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
       println(s"${index + 1} - ${room.name}")
     }
     println("b - Leave building")
-    println("s - Show status")
-    println("0 - End game")
 
   private def showStatus(player: Player): Unit =
     println()
