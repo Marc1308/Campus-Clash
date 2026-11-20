@@ -89,6 +89,21 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       controller.enterRoom("missing") shouldBe false
     }
 
+    "execute the same room command against the current state" in {
+      val controller = newController()
+      val observer = new RecordingObserver()
+      controller.addObserver(observer)
+      val visitClassroom = NavigationCommand.EnterRoom(classroom.id)
+
+      controller.execute(visitClassroom) shouldBe false
+      observer.states shouldBe Vector(controller.state)
+
+      controller.execute(NavigationCommand.EnterBuilding(building.id)) shouldBe true
+      controller.execute(visitClassroom) shouldBe true
+      observer.states.size shouldBe 3
+      observer.states.last.currentRoomId shouldBe Some(classroom.id)
+    }
+
     "leave the current building" in {
       val controller = newController()
       controller.enterBuilding(building.id)

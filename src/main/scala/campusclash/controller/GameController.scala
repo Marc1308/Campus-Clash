@@ -30,23 +30,21 @@ final class GameController(
     observers = observers.filterNot(_ == observer)
 
   def enterBuilding(buildingId: String): Boolean =
-    GameLogic.findBuilding(worldData, buildingId) match
-      case Some(building) =>
-        updateState(GameLogic.enterBuilding(gameState, building))
-        true
-      case None =>
-        false
+    execute(NavigationCommand.EnterBuilding(buildingId))
 
   def enterRoom(roomId: String): Boolean =
-    currentBuilding.flatMap(GameLogic.findRoom(_, roomId)) match
-      case Some(room) =>
-        updateState(GameLogic.enterRoom(gameState, room))
+    execute(NavigationCommand.EnterRoom(roomId))
+
+  def leaveBuilding(): Unit =
+    execute(NavigationCommand.LeaveBuilding)
+
+  def execute(command: NavigationCommand): Boolean =
+    command.transition(gameState, worldData) match
+      case Some(nextState) =>
+        updateState(nextState)
         true
       case None =>
         false
-
-  def leaveBuilding(): Unit =
-    updateState(GameLogic.leaveBuilding(gameState))
 
   def completeQuest(questId: String): Unit =
     updateState(GameLogic.completeQuest(gameState, questId))

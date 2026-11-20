@@ -1,6 +1,7 @@
 package campusclash.console
 
-import campusclash.controller.{GameController, GameObserver}
+import campusclash.controller.{GameController, GameObserver, NavigationCommand}
+import campusclash.controller.NavigationCommand.{EnterBuilding, EnterRoom, LeaveBuilding}
 import campusclash.model.*
 
 import scala.annotation.tailrec
@@ -8,77 +9,60 @@ import scala.io.StdIn.readLine
 
 final class ConsoleGame(controller: GameController) extends GameObserver:
 
+  private sealed trait ConsoleScreen:
+    def render(): Unit
+    def navigationFor(input: String): Option[NavigationCommand]
+
+  private object CampusScreen extends ConsoleScreen:
+    override def render(): Unit = showCampus()
+
+    override def navigationFor(input: String): Option[NavigationCommand] =
+      selectByNumber(input, controller.buildings).map(building => EnterBuilding(building.id))
+
+  private final class BuildingScreen(building: Building) extends ConsoleScreen:
+    override def render(): Unit =
+      showBuildingInfo(building)
+      controller.currentRoom.foreach(showRoomInfo)
+      showBuildingMenu(building)
+
+    override def navigationFor(input: String): Option[NavigationCommand] =
+      input match
+        case "b" => Some(LeaveBuilding)
+        case number => selectByNumber(number, building.rooms).map(room => EnterRoom(room.id))
+
   def start(): Unit =
     controller.addObserver(this)
-    gameLoop()
-    controller.removeObserver(this)
+    try gameLoop()
+    finally controller.removeObserver(this)
 
   override def onGameStateChanged(state: GameState): Unit =
-    render(state)
+    currentScreen.render()
+
+  private def currentScreen: ConsoleScreen =
+    controller.currentBuilding match
+      case None => CampusScreen
+      case Some(building) => new BuildingScreen(building)
 
   @tailrec
   private def gameLoop(): Unit =
-    val continue =
-      controller.currentBuilding match
-        case None => handleCampusInput()
-        case Some(building) => handleBuildingInput(building)
-
-    if continue then gameLoop()
-
-  private def handleCampusInput(): Boolean =
+    val screen = currentScreen
     readLine("> ") match
-      case "0" =>
+      case "0" | null =>
         println("Game ended.")
-        false
       case "s" =>
         showStatus(controller.state.player)
-        render(controller.state)
-        true
+        screen.render()
+        gameLoop()
       case input =>
-        selectByNumber(input, controller.buildings) match
-          case Some(building) =>
-            controller.enterBuilding(building.id)
-            true
-          case None =>
-            println("Invalid input.")
-            render(controller.state)
-            true
-
-  private def handleBuildingInput(building: Building): Boolean =
-    readLine("> ") match
-      case "0" =>
-        println("Game ended.")
-        false
-      case "b" =>
-        controller.leaveBuilding()
-        true
-      case "s" =>
-        showStatus(controller.state.player)
-        render(controller.state)
-        true
-      case input =>
-        selectByNumber(input, building.rooms) match
-          case Some(room) =>
-            controller.enterRoom(room.id)
-            true
-          case None =>
-            println("Invalid input.")
-            render(controller.state)
-            true
+        if !screen.navigationFor(input).exists(controller.execute) then
+          println("Invalid input.")
+          screen.render()
+        gameLoop()
 
   private def selectByNumber[A](input: String, values: Seq[A]): Option[A] =
     input.toIntOption
       .filter(index => index >= 1 && index <= values.size)
       .map(index => values(index - 1))
-
-  private def render(state: GameState): Unit =
-    state.currentBuildingId.flatMap { _ => controller.currentBuilding } match
-      case Some(building) =>
-        showBuildingInfo(building)
-        controller.currentRoom.foreach(showRoomInfo)
-        showBuildingMenu(building)
-      case None =>
-        showCampus()
 
   private def showCampus(): Unit =
     println()

@@ -114,4 +114,14 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
       countOccurrences(output, "Location: Campus") shouldBe 2
       output should include("Game ended.")
     }
+
+    "interpret navigation keys according to the active screen" in {
+      val output = runGame(Seq("b", "1", "2", "b", "2"))
+
+      countOccurrences(output, "Invalid input.") shouldBe 1
+      output should include("Room: Room A101")
+      output should include("=== Library ===")
+      output.indexOf("Room: Room A101") should be < output.indexOf("=== Library ===")
+      output should include("Game ended.")
+    }
   }
