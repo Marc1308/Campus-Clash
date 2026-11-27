@@ -12,12 +12,14 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
     "Building entrance",
     Seq.empty
   )
+
   private val classroom = Room(
     "classroom",
     "Classroom",
     "A classroom",
     Seq.empty
   )
+
   private val building = Building(
     "building",
     "Building",
@@ -25,6 +27,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
     entrance.id,
     Seq(entrance, classroom)
   )
+
   private val worldData = WorldData(Seq(building))
 
   private def newController(): GameController =
@@ -45,6 +48,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       states = states :+ state
 
   "GameController" should {
+
     "expose available world data" in {
       val controller = newController()
 
@@ -129,6 +133,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       controller.state.player.health shouldBe 20
       controller.isGameOver shouldBe false
     }
+
     "undo navigation actions" in {
       val controller = newController()
 
@@ -140,6 +145,7 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       controller.currentBuilding shouldBe None
       controller.currentRoom shouldBe None
     }
+
     "redo undone navigation actions" in {
       val controller = newController()
 
@@ -149,5 +155,55 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       controller.redo() shouldBe true
 
       controller.currentBuilding shouldBe Some(building)
+    }
+
+    "return false when undo is not possible" in {
+      val controller = newController()
+
+      controller.undo() shouldBe false
+    }
+
+    "return false when redo is not possible" in {
+      val controller = newController()
+
+      controller.redo() shouldBe false
+    }
+
+    "notify observers after undo and redo" in {
+      val controller = newController()
+      val observer = new RecordingObserver()
+
+      controller.addObserver(observer)
+
+      controller.enterBuilding(building.id) shouldBe true
+      observer.states.size shouldBe 2
+
+      controller.undo() shouldBe true
+      observer.states.size shouldBe 3
+      observer.states.last.currentBuildingId shouldBe None
+
+      controller.redo() shouldBe true
+      observer.states.size shouldBe 4
+      observer.states.last.currentBuildingId shouldBe Some(building.id)
+    }
+
+    "not update the state when a player action changes nothing" in {
+      val controller = newController()
+      val observer = new RecordingObserver()
+
+      controller.addObserver(observer)
+
+      val initialState = controller.state
+      val initialNotifications = observer.states.size
+
+      controller.damagePlayer(0)
+
+      controller.state shouldBe initialState
+      observer.states.size shouldBe initialNotifications
+
+      controller.healPlayer(0)
+
+      controller.state shouldBe initialState
+      observer.states.size shouldBe initialNotifications
     }
   }
