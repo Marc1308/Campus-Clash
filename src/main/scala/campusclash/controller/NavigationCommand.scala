@@ -21,7 +21,7 @@ sealed trait NavigationCommand:
 
 object NavigationCommand:
 
-  final case class EnterBuilding(buildingId: String)
+  case class EnterBuilding(buildingId: String)
     extends NavigationCommand:
 
     private[controller] override def doStep(
@@ -32,7 +32,7 @@ object NavigationCommand:
         .map(GameLogic.enterBuilding(state, _))
 
 
-  final case class EnterRoom(roomId: String)
+  case class EnterRoom(roomId: String)
     extends NavigationCommand:
 
     private[controller] override def doStep(
