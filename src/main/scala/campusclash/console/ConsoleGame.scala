@@ -17,7 +17,10 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
     override def render(): Unit =
       screen.render()
       println("s - Show status")
+      println("u - Undo")
+      println("r - Redo")
       println("0 - End game")
+
 
     override def navigationFor(input: String): Option[NavigationCommand] =
       screen.navigationFor(input)
@@ -57,17 +60,32 @@ final class ConsoleGame(controller: GameController) extends GameObserver:
   @tailrec
   private def gameLoop(): Unit =
     val screen = currentScreen
-    readLine("> ") match
-      case "0" | null =>
+
+    Option(readLine("> ")) match
+      case None =>
         println("Game ended.")
-      case "s" =>
+
+      case Some("0") =>
+        println("Game ended.")
+
+      case Some("s") =>
         showStatus(controller.state.player)
         screen.render()
         gameLoop()
-      case input =>
+
+      case Some("u") =>
+        if !controller.undo() then
+          println("Nothing to undo.")
+        gameLoop()
+
+      case Some("r") =>
+        if !controller.redo() then
+          println("Nothing to redo.")
+        gameLoop()
+
+      case Some(input) =>
         if !screen.navigationFor(input).exists(controller.execute) then
           println("Invalid input.")
-          screen.render()
         gameLoop()
 
   private def selectByNumber[A](input: String, values: Seq[A]): Option[A] =

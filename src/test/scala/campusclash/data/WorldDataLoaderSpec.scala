@@ -42,36 +42,43 @@ class WorldDataLoaderSpec extends AnyWordSpec with Matchers:
           |}
           |""".stripMargin
 
-      val worldData = WorldDataLoader.parse(json)
+      WorldDataLoader.parse(json).isSuccess shouldBe true
+      val worldData = WorldDataLoader.parse(json).get
       val building = worldData.buildings.head
       val room = building.rooms.head
       val quest = room.quests.head
 
-      building.id shouldBe "buildingA"
+      building.id.shouldBe("buildingA")
       building.name shouldBe "A Building"
       building.description shouldBe "Test building"
       building.entryRoomId shouldBe "a101"
-      room.id shouldBe "a101"
+      room.id.shouldBe("a101")
       room.name shouldBe "Room A101"
       room.description shouldBe "Test room"
-      quest.id shouldBe "visitA101"
+      quest.id.shouldBe ("visitA101")
       quest.title shouldBe "Visit A101"
       quest.description shouldBe "Reach the room."
       quest.condition shouldBe QuestCondition.EnterRoom("a101")
     }
+    "return Failure when parsing invalid JSON" in {
+      val result = WorldDataLoader.parse("invalid json")
+
+      result.isFailure shouldBe true
+    }
 
     "load the bundled buildings resource" in {
-      val worldData = WorldDataLoader.load()
+      val worldData = WorldDataLoader.load().get
 
       worldData.buildings.map(_.id) should contain allOf ("buildingA", "library")
     }
 
     "report a missing resource" in {
-      val exception = intercept[IllegalArgumentException] {
+      val result =
         WorldDataLoader.loadResource("/data/missing.json")
-      }
 
-      exception.getMessage should include("/data/missing.json")
+      result.isFailure shouldBe true
+
+      result.failed.get.getMessage should include("/data/missing.json")
     }
 
     "round-trip every supported quest condition" in {

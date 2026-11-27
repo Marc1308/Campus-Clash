@@ -26,7 +26,8 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
           None,
           Set.empty
         )
-        val controller = new GameController(state, WorldDataLoader.load())
+        val worldData = WorldDataLoader.load().get
+        val controller = new GameController(state, worldData)
 
         new ConsoleGame(controller).start()
       }
@@ -42,86 +43,86 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
     "show buildings, rooms, and quests loaded from JSON" in {
       val output = runGame(Seq("1", "2", "b", "2", "2", "0"))
 
-      output should include("=== Campus Clash ===")
-      output should include("Buildings:")
-      output should include("1 - A Building")
-      output should include("2 - Library")
+      output.should(include("=== Campus Clash ==="))
+      output.should(include("Buildings:"))
+      output.should(include("1 - A Building"))
+      output.should(include("2 - Library"))
 
-      output should include("You enter the A Building.")
-      output should include("=== A Building ===")
-      output should include("Rooms:")
-      output should include("1 - Entrance Hall")
-      output should include("2 - Room A101")
-      output should include("Room: Room A101")
+      output.should(include("You enter the A Building."))
+      output.should(include("=== A Building ==="))
+      output.should(include("Rooms:"))
+      output.should(include("1 - Entrance Hall"))
+      output.should(include("2 - Room A101"))
+      output.should(include("Room: Room A101"))
 
-      output should include("Quests:")
-      output should include("Federal States: Reach Room A101.")
-      output should include("Condition: EnterRoom(a101)")
+      output.should(include("Quests:"))
+      output.should(include("Federal States: Reach Room A101."))
+      output.should(include("Condition: EnterRoom(a101)"))
 
-      output should include("=== Library ===")
-      output should include("Room: Study Room")
-      output should include("2 - Study Room")
-      output should include("Study Time: Reach the study room.")
+      output.should(include("=== Library ==="))
+      output.should(include("Room: Study Room"))
+      output.should(include("2 - Study Room"))
+      output.should(include("Study Time: Reach the study room."))
 
-      output should include("b - Leave building")
-      output should include("Game ended.")
+      output.should(include("b - Leave building"))
+      output.should(include("Game ended."))
     }
 
-    "show all menu options and input prompts" in {
-      val campusOutput = runGame(Seq("0"))
+      "show all menu options and input prompts" in {
+        val campusOutput = runGame(Seq("0"))
 
-      campusOutput should include("=== Campus Clash ===")
-      campusOutput should include("Buildings:")
+        campusOutput should include("=== Campus Clash ===")
+        campusOutput should include("Buildings:")
 
-      countOccurrences(campusOutput, "s - Show status") shouldBe 1
-      countOccurrences(campusOutput, "0 - End game") shouldBe 1
-      countOccurrences(campusOutput, "> ") shouldBe 1
+        countOccurrences(campusOutput, "s - Show status") shouldBe 1
+        countOccurrences(campusOutput, "0 - End game") shouldBe 1
+        countOccurrences(campusOutput, "> ") shouldBe 1
 
-      val buildingOutput = runGame(Seq("1", "0"))
+        val buildingOutput = runGame(Seq("1", "0"))
 
-      buildingOutput should include("=== A Building ===")
-      buildingOutput should include("Rooms:")
-      buildingOutput should include("b - Leave building")
+        buildingOutput should include("=== A Building ===")
+        buildingOutput should include("Rooms:")
+        buildingOutput should include("b - Leave building")
 
-      countOccurrences(buildingOutput, "s - Show status") shouldBe 2
-      countOccurrences(buildingOutput, "0 - End game") shouldBe 2
-      countOccurrences(buildingOutput, "> ") shouldBe 2
+        countOccurrences(buildingOutput, "s - Show status") shouldBe 2
+        countOccurrences(buildingOutput, "0 - End game") shouldBe 2
+        countOccurrences(buildingOutput, "> ") shouldBe 2
+      }
+
+      "not show quests when a room has no quests" in {
+        val output = runGame(Seq("1", "0"))
+
+        output should include("Room: Entrance Hall")
+        output should not include ("Quests:")
+      }
+
+      "show status and reject invalid campus and building input" in {
+        val output = runGame(
+          Seq("s", "text", "99", "1", "s", "text", "99", "0")
+        )
+
+        output should include("=== Status ===")
+        output should include("Name:  Student")
+        output should include("HP:    100/100")
+        output should include("Level: 1")
+
+        countOccurrences(output, "Invalid input.") shouldBe 4
+      }
+
+      "allow leaving a building and ending the game on campus" in {
+        val output = runGame(Seq("1", "b", "0"))
+
+        countOccurrences(output, "Location: Campus") shouldBe 2
+        output should include("Game ended.")
+      }
+
+      "interpret navigation keys according to the active screen" in {
+        val output = runGame(Seq("b", "1", "2", "b", "2"))
+
+        countOccurrences(output, "Invalid input.") shouldBe 1
+        output should include("Room: Room A101")
+        output should include("=== Library ===")
+        output.indexOf("Room: Room A101") should be < output.indexOf("=== Library ===")
+        output should include("Game ended.")
+      }
     }
-
-    "not show quests when a room has no quests" in {
-      val output = runGame(Seq("1", "0"))
-
-      output should include("Room: Entrance Hall")
-      output should not include("Quests:")
-    }
-
-    "show status and reject invalid campus and building input" in {
-      val output = runGame(
-        Seq("s", "text", "99", "1", "s", "text", "99", "0")
-      )
-
-      output should include("=== Status ===")
-      output should include("Name:  Student")
-      output should include("HP:    100/100")
-      output should include("Level: 1")
-
-      countOccurrences(output, "Invalid input.") shouldBe 4
-    }
-
-    "allow leaving a building and ending the game on campus" in {
-      val output = runGame(Seq("1", "b", "0"))
-
-      countOccurrences(output, "Location: Campus") shouldBe 2
-      output should include("Game ended.")
-    }
-
-    "interpret navigation keys according to the active screen" in {
-      val output = runGame(Seq("b", "1", "2", "b", "2"))
-
-      countOccurrences(output, "Invalid input.") shouldBe 1
-      output should include("Room: Room A101")
-      output should include("=== Library ===")
-      output.indexOf("Room: Room A101") should be < output.indexOf("=== Library ===")
-      output should include("Game ended.")
-    }
-  }

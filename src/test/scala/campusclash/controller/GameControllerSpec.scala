@@ -129,4 +129,25 @@ class GameControllerSpec extends AnyWordSpec with Matchers:
       controller.state.player.health shouldBe 20
       controller.isGameOver shouldBe false
     }
+    "undo navigation actions" in {
+      val controller = newController()
+
+      controller.enterBuilding(building.id) shouldBe true
+      controller.currentBuilding shouldBe Some(building)
+
+      controller.undo() shouldBe true
+
+      controller.currentBuilding shouldBe None
+      controller.currentRoom shouldBe None
+    }
+    "redo undone navigation actions" in {
+      val controller = newController()
+
+      controller.enterBuilding(building.id)
+      controller.undo()
+
+      controller.redo() shouldBe true
+
+      controller.currentBuilding shouldBe Some(building)
+    }
   }

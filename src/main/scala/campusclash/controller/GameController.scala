@@ -9,6 +9,7 @@ final class GameController(
                           ):
 
   private var gameState = initialState
+  private val undoManager = new UndoManager
   private var observers = Vector.empty[GameObserver]
 
   def state: GameState = gameState
@@ -39,21 +40,46 @@ final class GameController(
     execute(NavigationCommand.LeaveBuilding)
 
   def execute(command: NavigationCommand): Boolean =
-    command.transition(gameState, worldData) match
+    command.doStep(gameState, worldData) match
       case Some(nextState) =>
+        undoManager.execute(command, gameState, nextState)
         updateState(nextState)
         true
       case None =>
         false
 
+  def undo(): Boolean =
+    undoManager.undo() match
+      case Some(previousState) =>
+        updateState(previousState)
+        true
+
+      case None =>
+        false
+
+  def redo(): Boolean =
+    undoManager.redo() match
+      case Some(nextState) =>
+        updateState(nextState)
+        true
+
+      case None =>
+        false
+
   def completeQuest(questId: String): Unit =
-    updateState(GameLogic.completeQuest(gameState, questId))
+    executeStateChange(
+      GameLogic.completeQuest(gameState, questId)
+    )
 
   def damagePlayer(amount: Int): Unit =
-    updateState(GameLogic.damagePlayer(gameState, amount))
+    executeStateChange(
+      GameLogic.damagePlayer(gameState, amount)
+    )
 
   def healPlayer(amount: Int): Unit =
-    updateState(GameLogic.healPlayer(gameState, amount))
+    executeStateChange(
+      GameLogic.healPlayer(gameState, amount)
+    )
 
   def isGameOver: Boolean =
     GameLogic.isGameOver(gameState)
@@ -61,3 +87,12 @@ final class GameController(
   private def updateState(newState: GameState): Unit =
     gameState = newState
     observers.foreach(_.onGameStateChanged(gameState))
+
+  private def executeStateChange(nextState: GameState): Unit =
+    if nextState != gameState then
+      undoManager.execute(
+        NavigationCommand.LeaveBuilding,
+        gameState,
+        nextState
+      )
+      updateState(nextState)
