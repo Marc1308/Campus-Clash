@@ -75,6 +75,8 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
       campusOutput should include("Buildings:")
 
       countOccurrences(campusOutput, "s - Show status") shouldBe 1
+      countOccurrences(campusOutput, "u - Undo") shouldBe 1
+      countOccurrences(campusOutput, "r - Redo") shouldBe 1
       countOccurrences(campusOutput, "0 - End game") shouldBe 1
       countOccurrences(campusOutput, "> ") shouldBe 1
 
@@ -85,6 +87,8 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
       buildingOutput should include("b - Leave building")
 
       countOccurrences(buildingOutput, "s - Show status") shouldBe 2
+      countOccurrences(buildingOutput, "u - Undo") shouldBe 2
+      countOccurrences(buildingOutput, "r - Redo") shouldBe 2
       countOccurrences(buildingOutput, "0 - End game") shouldBe 2
       countOccurrences(buildingOutput, "> ") shouldBe 2
     }
@@ -144,6 +148,21 @@ class ConsoleGameSpec extends AnyWordSpec with Matchers:
       output should include("=== A Building ===")
       output should include("Location: Campus")
       output should include("Game ended.")
+    }
+
+    "not show an error message when undo is successful" in {
+      val output = runGame(Seq("1", "u", "0"))
+
+      output should include("You enter the A Building.")
+      output should include("Location: Campus")
+      output should not include ("Nothing to undo.")
+    }
+
+    "not show an error message when redo is successful" in {
+      val output = runGame(Seq("1", "u", "r", "0"))
+
+      output should include("You enter the A Building.")
+      output should not include ("Nothing to redo.")
     }
 
     "end the game when input is exhausted" in {
